@@ -6,6 +6,7 @@ class Interpreter
     @instruction_pointer = 0
     @data_pointer = 0
     @output = ""
+    @options = {step_by_step: false}
     start
   end
 
@@ -16,9 +17,11 @@ class Interpreter
   def prompt_mode
     while true
       #puts "[I]nteractive mode, Load [P]rogram, or [E]xit?"
-      puts "Load [P]rogram or [E]xit?"
+      puts "Load [P]rogram, [O]ptions or [E]xit?"
       case gets.chomp.downcase
       when "i"
+      when "o"
+        prompt_options
       when "p"
         load_program
         prompt_to_run_program
@@ -28,6 +31,18 @@ class Interpreter
     end
   end
 
+  def prompt_options
+    while true
+      puts ["[S]tep by step mode", "[B]ack"]
+      case gets.chomp.downcase
+      when "s"
+        @options[:step_by_step] = !@options[:step_by_step]
+        puts "Step by step is " + @options[:step_by_step].to_s
+      when "b"
+        break
+      end
+    end
+  end
   def prompt_to_run_program
     while true
       puts "Do you want to [R]un or [O]utput the program or go [B]ack?"
@@ -61,6 +76,7 @@ class Interpreter
       act_on_instruction(@instructions[@instruction_pointer])
       update_display
       @instruction_pointer += 1
+      gets if @options[:step_by_step]
     end
   end
 
@@ -71,8 +87,8 @@ class Interpreter
 
   def update_display
     system "clear"
-    puts @data[0..20].join
-    puts " "*(@data[0..@data_pointer].join.length) + "^"
+    puts @data[0..20].join " "
+    puts " "*(@data[0..@data_pointer].join(" ").length - 1) + "^"
     puts @output
   end
 
