@@ -1,4 +1,5 @@
 class Interpreter
+
   def initialize
     @instructions = []
     @data = [0]*30000
@@ -32,6 +33,7 @@ class Interpreter
       puts "Do you want to [R]un or [O]utput the program or go [B]ack?"
       case gets.chomp.downcase
       when "r"
+        reset_data_and_pointers
         run_program
       when "o"
         print_program
@@ -46,7 +48,15 @@ class Interpreter
     puts
   end
 
+  def reset_data_and_pointers
+    @data = [0]*30000
+    @instruction_pointer = 0
+    @data_pointer = 0
+    @output = ""
+  end
+
   def run_program
+
     while @instruction_pointer < @instructions.length
       act_on_instruction(@instructions[@instruction_pointer])
       update_display
@@ -54,10 +64,16 @@ class Interpreter
     end
   end
 
+  def interactive_mode
+    puts "Enter one or more instructions"
+    @instructions += gets.chomp.split ""
+  end
+
   def update_display
     system "clear"
-    @data[0..10].each { |x| print x.to_s + " "}
-    puts "\n" << @output
+    puts @data[0..20].join
+    puts " "*(@data[0..@data_pointer].join.length) + "^"
+    puts @output
   end
 
   def get_file_name
@@ -66,7 +82,6 @@ class Interpreter
   end
 
   def load_program
-
     have_file = false
     @instructions = []
     until have_file
