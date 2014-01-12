@@ -1,10 +1,24 @@
+#added interactive mode
+#working on save_program
+#f = File.new("newfile", File::CREAT|File::TRUNC|File::RDWR, 0644)
+
+
+
+
+
+
+
+
+
 class Interpreter
 
   def initialize
     @instructions = []
     @data = [0]*30000
+
     @instruction_pointer = 0
     @data_pointer = 0
+
     @output = ""
     @options = {step_by_step: false}
     start
@@ -16,10 +30,11 @@ class Interpreter
 
   def prompt_mode
     while true
-      #puts "[I]nteractive mode, Load [P]rogram, or [E]xit?"
-      puts "Load [P]rogram, [O]ptions or [E]xit?"
+      puts "[I]nteractive mode, Load [P]rogram, or [E]xit?"
       case gets.chomp.downcase
       when "i"
+        reset_data_and_pointers
+        interactive_mode
       when "o"
         prompt_options
       when "p"
@@ -29,6 +44,10 @@ class Interpreter
         break
       end
     end
+  end
+
+  def save_program
+
   end
 
   def prompt_options
@@ -43,22 +62,23 @@ class Interpreter
       end
     end
   end
+  
   def prompt_to_run_program
     while true
-      puts "Do you want to [R]un or [O]utput the program or go [B]ack?"
+      puts "Do you want to [R]un or [D]isplay the program or go [B]ack?"
       case gets.chomp.downcase
       when "r"
         reset_data_and_pointers
         run_program
-      when "o"
-        print_program
+      when "d"
+        display_program
       when "b"
         break
       end
     end
   end
 
-  def print_program
+  def display_program
     @instructions.each { |i| print i }
     puts
   end
@@ -71,7 +91,6 @@ class Interpreter
   end
 
   def run_program
-
     while @instruction_pointer < @instructions.length
       act_on_instruction(@instructions[@instruction_pointer])
       update_display
@@ -81,8 +100,33 @@ class Interpreter
   end
 
   def interactive_mode
-    puts "Enter one or more instructions"
-    @instructions += gets.chomp.split ""
+    while true
+      puts "Enter one or more instructions, display [O]ptions, or go [B]ack"
+      ins = gets.chomp.downcase.split ""
+      case ins[0]
+      when "o"
+        interactive_options
+      when "b"
+        break
+      else
+        @instructions.concat ins
+        run_program
+      end
+    end
+  end
+
+  def interactive_options
+    options = ["[D]isplay program", "[S]ave program to file", "[R]un program from begining"]
+    puts options
+    case gets.chomp.downcase
+    when "d"
+      display_program
+    when "s"
+      save_program
+    when "r"
+      reset_data_and_pointers
+      run_program
+    end
   end
 
   def update_display
