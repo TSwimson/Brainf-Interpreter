@@ -1,7 +1,8 @@
 #added interactive mode
 #working on save_program
-#f = File.new("newfile", File::CREAT|File::TRUNC|File::RDWR, 0644)
-
+#f = File.new
+#("newfile", File::CREAT|File::TRUNC|File::RDWR, 0644)
+require "pry"
 class Interpreter
 
   def initialize
@@ -10,6 +11,8 @@ class Interpreter
 
     @instruction_pointer = 0
     @data_pointer = 0
+
+    @jumps = []
 
     @output = ""
     @options = {step_by_step: false}
@@ -86,6 +89,7 @@ class Interpreter
     @data = [0]*30000
     @instruction_pointer = 0
     @data_pointer = 0
+    @jumps = []
     @output = ""
   end
 
@@ -93,7 +97,11 @@ class Interpreter
     while @instruction_pointer < @instructions.length
       act_on_instruction(@instructions[@instruction_pointer])
       update_display
-      @instruction_pointer += 1
+      begin
+        @instruction_pointer += 1
+      rescue
+        binding.pry
+      end
       gets if @options[:step_by_step]
     end
   end
@@ -139,7 +147,8 @@ class Interpreter
   end
 
   def update_display
-    system "clear"
+    #system "clear"
+    #puts @instructions[@instruction_pointer]
     puts @data[0..20].join " "
     puts " "*(@data[0..@data_pointer].join(" ").length - 1) + "^"
     puts @output
@@ -176,7 +185,10 @@ class Interpreter
   def act_on_instruction(ins)
     case ins
     when ">"
-      @data_pointer += 1 if @data_pointer + 1 < 30000
+      if @data_pointer + 1 >= @data.length
+        @data.concat([0]*100)
+      end
+      @data_pointer += 1
     when "<"
       @data_pointer -= 1 if @data_pointer > 0
     when "+"
@@ -195,12 +207,15 @@ class Interpreter
         while @instructions[@instruction_pointer] != "]"
           @instruction_pointer += 1
         end
+      else
+        @jumps.push @instruction_pointer
+        puts "Jumps: " + @jumps.to_s
       end
     when "]"
       if @data[@data_pointer] != 0
-        while @instructions[@instruction_pointer] != "["
-          @instruction_pointer -= 1
-        end
+        @instruction_pointer = @jumps[-1]
+      else
+        @jumps.pop
       end
     end
   end
