@@ -2,14 +2,6 @@
 #working on save_program
 #f = File.new("newfile", File::CREAT|File::TRUNC|File::RDWR, 0644)
 
-
-
-
-
-
-
-
-
 class Interpreter
 
   def initialize
@@ -46,8 +38,15 @@ class Interpreter
     end
   end
 
-  def save_program
+  def save_program name
+    begin
+        File.open(name, "wb") do |file|
+          file.write(@instructions.join)
+        end
 
+      rescue Errno::ENOENT => error
+        puts "Error writing file " + error.to_s
+    end
   end
 
   def prompt_options
@@ -116,16 +115,26 @@ class Interpreter
   end
 
   def interactive_options
-    options = ["[D]isplay program", "[S]ave program to file", "[R]un program from begining"]
-    puts options
-    case gets.chomp.downcase
-    when "d"
-      display_program
-    when "s"
-      save_program
-    when "r"
-      reset_data_and_pointers
-      run_program
+    options = ["[L]oad program", "[D]isplay program", "[S]ave program to file", "[R]un program from begining", "toggle [st]ep-by-step mode", "Go [B]ack"]
+    while true
+      puts options
+      case gets.chomp.downcase
+      when "st"
+        @options[:step_by_step] = !@options[:step_by_step]
+        puts "step-by-step is " + @options[:step_by_step].to_s
+      when "l"
+        load_program
+      when "d"
+        display_program
+      when "s"
+        puts "Enter the filename"
+        save_program gets.chomp
+      when "r"
+        reset_data_and_pointers
+        run_program
+      when "b"
+        break
+      end
     end
   end
 
