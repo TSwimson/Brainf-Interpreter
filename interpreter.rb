@@ -1,7 +1,3 @@
-#added interactive mode
-#working on save_program
-#f = File.new
-#("newfile", File::CREAT|File::TRUNC|File::RDWR, 0644)
 require "pry"
 class Interpreter
 
@@ -25,7 +21,7 @@ class Interpreter
 
   def prompt_mode
     while true
-      puts "[I]nteractive mode, Load [P]rogram, or [E]xit?"
+      puts "[I]nteractive mode, Load [P]rogram, display [O]ptions or [E]xit?"
       case gets.chomp.downcase
       when "i"
         reset_data_and_pointers
@@ -97,16 +93,13 @@ class Interpreter
     while @instruction_pointer < @instructions.length
       act_on_instruction(@instructions[@instruction_pointer])
       update_display
-      begin
-        @instruction_pointer += 1
-      rescue
-        binding.pry
-      end
+      @instruction_pointer += 1
       gets if @options[:step_by_step]
     end
   end
 
   def interactive_mode
+    reset_data_and_pointers
     while true
       puts "Enter one or more instructions, display [O]ptions, or go [B]ack"
       ins = gets.chomp.downcase.split ""
@@ -147,8 +140,14 @@ class Interpreter
   end
 
   def update_display
-    #system "clear"
-    #puts @instructions[@instruction_pointer]
+    puts `clear`
+    puts "Jumps: #{@jumps}"
+    begining = @instruction_pointer - 10
+    begining = 0 if begining < 0
+    ending = @instruction_pointer + 10
+    ending = @instructions.length - 1 if ending >= @instructions.length
+    puts @instructions[begining..ending].join
+    puts " "*(@instructions[begining..ending].join.length/2) + "^"
     puts @data[0..20].join " "
     puts " "*(@data[0..@data_pointer].join(" ").length - 1) + "^"
     puts @output
@@ -209,7 +208,6 @@ class Interpreter
         end
       else
         @jumps.push @instruction_pointer
-        puts "Jumps: " + @jumps.to_s
       end
     when "]"
       if @data[@data_pointer] != 0
