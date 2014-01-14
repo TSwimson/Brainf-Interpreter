@@ -1,8 +1,7 @@
 require "pry"
 class Interpreter
-
+  attr_accessor :options
   def initialize
-    @instructions = []
     @data = [0]*30000
 
     @instruction_pointer = 0
@@ -12,73 +11,7 @@ class Interpreter
 
     @output = ""
     @options = {step_by_step: false}
-    start
-  end
 
-  def start
-    prompt_mode
-  end
-
-  def prompt_mode
-    while true
-      puts "[I]nteractive mode, Load [P]rogram, display [O]ptions or [E]xit?"
-      case gets.chomp.downcase
-      when "i"
-        reset_data_and_pointers
-        interactive_mode
-      when "o"
-        prompt_options
-      when "p"
-        load_program
-        prompt_to_run_program
-      when "e"
-        break
-      end
-    end
-  end
-
-  def save_program name
-    begin
-        File.open(name, "wb") do |file|
-          file.write(@instructions.join)
-        end
-
-      rescue Errno::ENOENT => error
-        puts "Error writing file " + error.to_s
-    end
-  end
-
-  def prompt_options
-    while true
-      puts ["[S]tep by step mode", "[B]ack"]
-      case gets.chomp.downcase
-      when "s"
-        @options[:step_by_step] = !@options[:step_by_step]
-        puts "Step by step is " + @options[:step_by_step].to_s
-      when "b"
-        break
-      end
-    end
-  end
-  
-  def prompt_to_run_program
-    while true
-      puts "Do you want to [R]un or [D]isplay the program or go [B]ack?"
-      case gets.chomp.downcase
-      when "r"
-        reset_data_and_pointers
-        run_program
-      when "d"
-        display_program
-      when "b"
-        break
-      end
-    end
-  end
-
-  def display_program
-    @instructions.each { |i| print i }
-    puts
   end
 
   def reset_data_and_pointers
@@ -89,9 +22,9 @@ class Interpreter
     @output = ""
   end
 
-  def run_program
-    while @instruction_pointer < @instructions.length
-      act_on_instruction(@instructions[@instruction_pointer])
+  def run_program instructions
+    while @instruction_pointer < instructions.length
+      act_on_instruction(instructions[@instruction_pointer])
       update_display
       @instruction_pointer += 1
       gets if @options[:step_by_step]
@@ -153,34 +86,6 @@ class Interpreter
     puts @output
   end
 
-  def get_file_name
-    puts "Enter the name of file to open "
-    gets.chomp
-  end
-
-  def load_program
-    have_file = false
-    @instructions = []
-    until have_file
-
-      file_name = get_file_name
-
-      begin
-        File.open(file_name) do |file|
-          while i = file.getc
-            @instructions.push i
-          end
-        end
-
-        have_file = true
-
-      rescue Errno::ENOENT => error
-        puts "File not found: " + error.to_s
-        have_file = false
-      end
-    end
-  end
-
   def act_on_instruction(ins)
     case ins
     when ">"
@@ -225,4 +130,4 @@ class Interpreter
   end
 end
 
-i = Interpreter.new
+
