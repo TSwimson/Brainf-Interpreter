@@ -32,9 +32,8 @@ class Interpreter
   end
 
   def interactive_mode
-    reset_data_and_pointers
     while true
-      puts "Enter one or more instructions, display [O]ptions, or go [B]ack"
+      puts "Enter one or more instructions, [O]ptions, [B]ack"
       ins = gets.chomp.downcase.split ""
       case ins[0]
       when "o"
@@ -73,17 +72,17 @@ class Interpreter
   end
 
   def update_display
+    # begining = @instruction_pointer - 10
+    # begining = 0 if begining < 0
+    # ending = @instruction_pointer + 10
+    # ending = @instructions.length - 1 if ending >= @instructions.length
+    # puts @instructions[begining..ending].join
+    # puts " "*(@instructions[begining..ending].join.length/2) + "^"
     puts `clear`
-    puts "Jumps: #{@jumps}"
-    begining = @instruction_pointer - 10
-    begining = 0 if begining < 0
-    ending = @instruction_pointer + 10
-    ending = @instructions.length - 1 if ending >= @instructions.length
-    puts @instructions[begining..ending].join
-    puts " "*(@instructions[begining..ending].join.length/2) + "^"
-    puts @data[0..20].join " "
-    puts " "*(@data[0..@data_pointer].join(" ").length - 1) + "^"
-    puts @output
+    out = @data[0..20].join " "
+    out += "\n" + " "*(@data[0..@data_pointer].join(" ").length - 1) + "^"
+    out += "\n" + @output
+    puts out
   end
 
   def act_on_instruction(ins)

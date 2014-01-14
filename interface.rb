@@ -45,8 +45,13 @@ class Interface
         @interpreter.reset_data_and_pointers
         puts "Data reset"
         ok
-      when "r" 
-        @interpreter.run_program @program.instructions
+      when "r"
+        if @program.instructions.size > 0
+          @interpreter.run_program @program.instructions
+          ok
+        else
+          puts "No program to run"
+        end
       when "d"
         puts @program.display
         ok
