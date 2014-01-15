@@ -17,14 +17,14 @@ class Interface
   def load_program
     loop do
       puts "Enter the name of the file to load "
-      break if @program.load_program gets.chomp
+      break if @program.load gets.chomp
     end
   end
 
   #Dispalys the main menu with options to run or display a program if there is on
   def display_menu
     main_menu = ["[L]oad program", "[I]nteractive mode"]
-    main_menu.concat ["[R]un program", "[D]isplay program"] if @program.instructions.length > 0
+    main_menu.concat ["[R]un program", "[D]isplay program", "[S]ave as"] if @program.instructions.length > 0
     main_menu.concat ["[O]ptions", "[Re]set data", "[E]xit"]
     puts main_menu
   end
@@ -36,7 +36,7 @@ class Interface
       display_menu
       case gets.chomp.downcase
       when "i"
-        interactive_mode
+        interactive
       when "o"
         prompt_options
       when "l"
@@ -55,11 +55,39 @@ class Interface
       when "d"
         puts @program.display
         ok
+      when "s"
+        puts "Enter file name"
+        @program.save(gets.chomp)
       when "e"
         break
       else
         puts "Uknown command"
         ok
+      end
+    end
+  end
+
+  def interactive
+    while true
+      puts `clear`
+      puts "Enter one or more instructions, [R]un, [D]isplay, [Re]set [B]ack"
+      ins = gets.chomp.downcase.split ""
+      case ins[0..1].join
+      when "r"
+        @interpreter.run_program @program.instructions
+          ok
+      when "re"
+        @interpreter.reset_data_and_pointers
+        puts "Data reset"
+        ok
+      when "d"
+        puts @program.display
+        ok
+      when "b"
+        break
+      else
+        @program.add ins
+
       end
     end
   end

@@ -1,7 +1,7 @@
 class Program
 
   attr_reader :instructions
-  
+
   def initialize
     @instructions = []
   end
@@ -10,7 +10,11 @@ class Program
     @instructions.inject { |sum, i| sum + i }
   end
   
-  def save_program name
+  def add i
+    @instructions.concat i
+  end
+
+  def save name
     begin
       File.open(name, "wb") do |file|
         file.write(@instructions.join)
@@ -20,7 +24,7 @@ class Program
     end
   end
 
-  def load_program file_name
+  def load file_name
     have_file = false
     begin
       File.open(file_name) do |file|

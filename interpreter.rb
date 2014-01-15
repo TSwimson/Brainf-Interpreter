@@ -23,27 +23,12 @@ class Interpreter
   end
 
   def run_program instructions
+    update_display
     while @instruction_pointer < instructions.length
       act_on_instruction(instructions[@instruction_pointer])
       update_display
       @instruction_pointer += 1
       gets if @options[:step_by_step]
-    end
-  end
-
-  def interactive_mode
-    while true
-      puts "Enter one or more instructions, [O]ptions, [B]ack"
-      ins = gets.chomp.downcase.split ""
-      case ins[0]
-      when "o"
-        interactive_options
-      when "b"
-        break
-      else
-        @instructions.concat ins
-        run_program
-      end
     end
   end
 
