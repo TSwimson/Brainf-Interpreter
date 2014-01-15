@@ -1,3 +1,6 @@
+#This class interprets the given program and keeps
+#track of the pointers and data
+
 require "pry"
 class Interpreter
   attr_accessor :options
@@ -14,6 +17,7 @@ class Interpreter
 
   end
 
+  #resets the data and pointers for rerunning a program
   def reset_data_and_pointers
     @data = [0]*30000
     @instruction_pointer = 0
@@ -22,55 +26,19 @@ class Interpreter
     @output = ""
   end
 
+  #runs the given <instructions> optionally one at a time if the step by step option is true
   def run_program instructions
     update_display instructions
     while @instruction_pointer < instructions.length
       act_on_instruction(instructions[@instruction_pointer], instructions)
-      # begin
-      #   act_on_instruction(instructions[@instruction_pointer])
-      # rescue
-      #   binding.pry
-      # end
       update_display instructions
       @instruction_pointer += 1
       gets if @options[:step_by_step]
     end
   end
 
-  def interactive_options
-    options = ["[L]oad program", "[D]isplay program", "[S]ave program to file", "[R]un program from begining", "toggle [st]ep-by-step mode", "Go [B]ack"]
-    while true
-      puts options
-      case gets.chomp.downcase
-      when "st"
-        @options[:step_by_step] = !@options[:step_by_step]
-        puts "step-by-step is " + @options[:step_by_step].to_s
-      when "l"
-        load_program
-      when "d"
-        display_program
-      when "s"
-        puts "Enter the filename"
-        save_program gets.chomp
-      when "r"
-        reset_data_and_pointers
-        run_program
-      when "b"
-        break
-      end
-    end
-  end
-
+  #updates the display with the instructions, current instruction pointer, data, data_pointer, and output
   def update_display instructions
-    # begining = @instruction_pointer - 10
-    # begining = 0 if begining < 0
-    # ending = @instruction_pointer + 10
-    # ending = @instructions.length - 1 if ending >= @instructions.length
-    # puts @instructions[begining..ending].join
-    # puts " "*(@instructions[begining..ending].join.length/2) + "^"
-    if (@instruction_pointer > instructions.size)
-      binding.pry
-    end
     puts `clear`
     out = ""
     out += instructions.join
@@ -81,6 +49,7 @@ class Interpreter
     puts out
   end
 
+  #acts on any given instruction <ins> also takes <instructions> 
   def act_on_instruction(ins, instructions)
     case ins
     when ">"
@@ -108,6 +77,7 @@ class Interpreter
     end
   end
 
+  #[ and ] handling methods
   def open_b instructions   
     if @data[@data_pointer] == 0
       opens = 1
@@ -132,6 +102,7 @@ class Interpreter
         @jumps.pop
     end
   end
+  #get input from the user
   def get_input
     puts "Enter a number 0-255"
     i = gets.to_i

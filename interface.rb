@@ -1,5 +1,6 @@
 require "./interpreter.rb"
 require "./program.rb"
+#A easy interface for the interpreter class allows for loading programs and running them in different modes
 def ok
   puts "Enter to continue"
   gets
@@ -72,7 +73,7 @@ class Interface
   def interactive
     while true
       puts `clear`
-      puts "Enter one or more instructions, [R]un, [D]isplay, [Re]set [B]ack"
+      puts "Enter one or more instructions, [R]un, [D]isplay, [Re]set, [B]ack"
       ins = gets.chomp.downcase.split ""
       case ins[0..1].join
       when "r"

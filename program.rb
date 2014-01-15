@@ -1,3 +1,5 @@
+#This class is for loading, parsing and saving programs
+
 class Program
 
   attr_reader :instructions
@@ -7,17 +9,19 @@ class Program
   end
 
   def display
-    @instructions.inject { |sum, i| sum + i }
+    @instructions.join
   end
-  
+
+  #add either an array of instructions or a string of instructions <i>
   def add i
     if i.kind_of? Array
       @instructions.concat i
-    else
-      @instructions << i
+    elsif i.kind_of? String
+      @instructions.concat i.split
     end
   end
 
+  #attempt to save the current <@instructions> to a file <name>
   def save name
     begin
       File.open(name, "wb") do |file|
@@ -28,10 +32,12 @@ class Program
     end
   end
 
+  #empties the current program array
   def clear
     @instructions = []
   end
 
+  #loads <file_name> into <@instructions> returns true if succesfull else returns false
   def load file_name
     have_file = false
     clear
@@ -42,8 +48,8 @@ class Program
         end
         have_file = true
       end
-    rescue Errno::ENOENT => error
-      puts "File not found: " + error.to_s
+    rescue
+      puts "File not found: "
       have_file = false
     end
     return have_file
