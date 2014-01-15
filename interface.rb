@@ -24,7 +24,7 @@ class Interface
   #Dispalys the main menu with options to run or display a program if there is on
   def display_menu
     main_menu = ["[L]oad program", "[I]nteractive mode"]
-    main_menu.concat ["[R]un program", "[D]isplay program", "[S]ave as"] if @program.instructions.length > 0
+    main_menu.concat ["[R]un program", "[D]isplay program", "[S]ave as", "[C]lear program"] if @program.instructions.length > 0
     main_menu.concat ["[O]ptions", "[Re]set data", "[E]xit"]
     puts main_menu
   end
@@ -45,6 +45,8 @@ class Interface
         @interpreter.reset_data_and_pointers
         puts "Data reset"
         ok
+      when "c"
+        @program.clear
       when "r"
         if @program.instructions.size > 0
           @interpreter.run_program @program.instructions

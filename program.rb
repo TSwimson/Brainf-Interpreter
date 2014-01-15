@@ -11,7 +11,11 @@ class Program
   end
   
   def add i
-    @instructions.concat i
+    if i.kind_of? Array
+      @instructions.concat i
+    else
+      @instructions << i
+    end
   end
 
   def save name
@@ -24,12 +28,17 @@ class Program
     end
   end
 
+  def clear
+    @instructions = []
+  end
+
   def load file_name
     have_file = false
+    clear
     begin
       File.open(file_name) do |file|
         while i = file.getc
-          @instructions.push i
+          add i
         end
         have_file = true
       end
