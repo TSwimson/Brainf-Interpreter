@@ -37,12 +37,25 @@ class Interpreter
     end
   end
 
+  def display_instructions_with_pointer instructions
+    out = ""
+    start = @instruction_pointer - 25
+    start = 0 if start < 0
+    ending = @instruction_pointer + 25
+    ending += (25 - @instruction_pointer) if start == 0
+    ending = instructions.length - 1 if ending > instructions.length - 1
+    pointer = " "*(@instruction_pointer - start) + "^"
+    out += instructions[start..ending].join + "\n"
+    out += pointer + "\n"
+  end
+
   #updates the display with the instructions, current instruction pointer, data, data_pointer, and output
   def update_display instructions
     puts `clear`
     out = ""
-    out += instructions.join
-    out += "\n" + (" "*(instructions[0...@instruction_pointer].join.length)) + "^"
+    # out += instructions.join
+    # out += "\n" + (" "*(instructions[0...@instruction_pointer].join.length)) + "^"
+    out += display_instructions_with_pointer instructions
     out += "\n#{@data[0..20].join " "}"
     out += "\n" + " "*(@data[0..@data_pointer].join(" ").length - 1) + "^"
     out += "\n" + @output

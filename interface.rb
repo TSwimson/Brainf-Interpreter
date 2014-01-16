@@ -1,5 +1,6 @@
 require "./interpreter.rb"
 require "./program.rb"
+#can take file name to load
 #A easy interface for the interpreter class allows for loading programs and running them in different modes
 def ok
   puts "Enter to continue"
@@ -8,9 +9,11 @@ end
 
 class Interface
 
-  def initialize
+  def initialize file=nil
+
     @program = Program.new
     @interpreter = Interpreter.new
+    @program.load file if file
     prompt_main_menu
   end
 
@@ -111,6 +114,5 @@ class Interface
   end
 
 end
-
-i = Interface.new
-
+puts ARGV[0]
+i = Interface.new ARGV[0]
