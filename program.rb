@@ -4,11 +4,12 @@ class Program
 
   attr_reader :instructions
 
-  def initialize
+  def initialize(file = nil)
     @instructions = []
+    load(file) if file
   end
 
-  def display
+  def print
     @instructions.join
   end
 
